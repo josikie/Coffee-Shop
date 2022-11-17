@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-database_filename = "database.db"
+database_filename = "database_test.db"
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
 
@@ -18,8 +18,9 @@ setup_db(app)
 def setup_db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
+    with app.app_context():
+        db.app = app
+        db.init_app(app)
 
 
 '''
@@ -57,6 +58,14 @@ class Drink(db.Model):
     # the ingredients blob - this stores a lazy json blob
     # the required datatype is [{'color': string, 'name':string, 'parts':number}]
     recipe = Column(String(180), nullable=False)
+
+    '''
+    __init__
+        initialize new drink
+    '''
+    def __init__(self, title, recipe):
+        self.title = title
+        self.recipe = recipe
 
     '''
     short()

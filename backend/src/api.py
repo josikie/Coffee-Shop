@@ -17,9 +17,17 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-# db_drop_and_create_all()
+# with app.app_context():
+#     db_drop_and_create_all()
 
 # ROUTES
+
+@app.route('/')
+def index():
+    return {
+        'name': 'Hi! I\'m a coffe shop applications.',
+        'age': '1'
+    }
 '''
 @TODO implement endpoint
     GET /drinks
@@ -29,6 +37,16 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
+@app.route('/drinks')
+def get_drinks():
+    drinks = Drink.query.all()
+
+    formatted_drinks = [drink.short() for drink in drinks]    
+    return jsonify({
+        "success": True,
+        "status_code": 200,
+        "drinks": formatted_drinks
+    })
 
 '''
 @TODO implement endpoint
@@ -38,7 +56,17 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail')
+def get_drinks_detail():
+    drinks = Drink.query.all()
 
+    formatted_drinks = [drink.long() for drink in drinks]
+
+    return jsonify({
+        'success': True,
+        "status_code": 200,
+        'drinks': formatted_drinks
+    })
 
 '''
 @TODO implement endpoint
@@ -49,8 +77,23 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+def create_drink():
+    try:
+        body = request.get_json()
+        title = body.get('title')
+        recipe = body.get('recipe')
 
+        newDrink = Drink(title=title, recipe=recipe)
+        newDrink.insert()
 
+        return jsonify({
+            'success':True,
+            "status_code": 200,
+            'drinks': newDrink.long()
+        })
+    except:
+        abort(422)
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -62,6 +105,34 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+def update_drink(id):
+    drink = Drink.query.get_or_404(id)
+    updatedDrink = request.get_json()
+    title = updatedDrink.get('title', None)
+    recipe = updatedDrink.get('recipe', None)
+
+    if title != None and recipe != None:
+        drink.title = title
+        drink.recipe = recipe
+        drink.update()
+    elif title != None:
+        drink.title = title
+        drink.update()
+    elif recipe != None:
+        drink.recipe = recipe
+        drink.update()
+    else:
+        return jsonify({
+            'success': True,
+            'drinks' : None
+        })
+
+    return jsonify({
+        'success' : True,
+        "status_code": 200,
+        'drinks': drink.long()
+    })
 
 
 '''
@@ -74,7 +145,16 @@ CORS(app)
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+def delete_drink(id):
+    drink = Drink.query.get_or_404(id)
+    drink.delete()
 
+    return jsonify({
+        'success': True,
+        "status_code": 200,
+        'delete': drink.id
+    })
 
 # Error Handling
 '''
@@ -106,7 +186,24 @@ def unprocessable(error):
 @TODO implement error handler for 404
     error handler should conform to general task above
 '''
+@app.errorhandler(404)
+def resource_not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
+'''
+    error handler for server error
+'''
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({
+        'success': True,
+        'error': 500,
+        'message': 'Internal Server Error'
+    }), 500
 
 '''
 @TODO implement error handler for AuthError
