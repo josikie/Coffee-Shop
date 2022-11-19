@@ -17,8 +17,8 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-# with app.app_context():
-#     db_drop_and_create_all()
+with app.app_context():
+    db_drop_and_create_all()
 
 # ROUTES
 '''
@@ -89,7 +89,7 @@ def create_drink(jwt):
         return jsonify({
             'success':True,
             'status_code': 200,
-            'drinks': newDrink.long()
+            'drinks': [newDrink.long()]
         }), 200
     except:
         abort(422)
@@ -134,7 +134,7 @@ def update_drink(jwt, id):
         return jsonify({
             'success' : True,
             "status_code": 200,
-            'drinks': drink.long()
+            'drinks': [drink.long()]
         })
     except:
         abort(422)
