@@ -125,6 +125,7 @@ def update_drink(id):
     else:
         return jsonify({
             'success': True,
+            "status_code": 200,
             'drinks' : None
         })
 
@@ -200,7 +201,7 @@ def resource_not_found(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     return jsonify({
-        'success': True,
+        'success': False,
         'error': 500,
         'message': 'Internal Server Error'
     }), 500
@@ -209,3 +210,18 @@ def internal_server_error(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above
 '''
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        'success': False,
+        'error': 401,
+        'message': 'Unauthorized'
+    }, 401)
+
+@app.errorhandler(403)
+def forbidden_response(error):
+    return jsonify({
+        'success': False,
+        'error': 403,
+        'message': 'Forbidden Access'
+    }, 403)
