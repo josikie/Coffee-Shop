@@ -52,15 +52,18 @@ def get_drinks():
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def get_drinks_detail(jwt):
-    drinks = Drink.query.all()
+    try:
+        drinks = Drink.query.all()
 
-    formatted_drinks = [drink.long() for drink in drinks]
+        formatted_drinks = [drink.long() for drink in drinks]
 
-    return jsonify({
-        'success': True,
-        "status_code": 200,
-        'drinks': formatted_drinks
-    })
+        return jsonify({
+            'success': True,
+            "status_code": 200,
+            'drinks': formatted_drinks
+        })
+    except:
+        abort(403)
 
 '''
 @TODO implement endpoint
@@ -74,18 +77,22 @@ def get_drinks_detail(jwt):
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def create_drink(jwt):
-    body = request.get_json()
-    title = body.get('title')
-    recipe = body.get('recipe')
+    try:
+        body = request.get_json()
+        title = body.get('title', None)
+        recipe = body.get('recipe', None)
+        recipeString = json.dumps(recipe)
 
-    newDrink = Drink(title=title, recipe=recipe)
-    newDrink.insert()
+        newDrink = Drink(title=title, recipe=recipeString)
+        newDrink.insert()
 
-    return jsonify({
-        'success':True,
-        'status_code': 200,
-        'drinks': newDrink.long()
-    }), 200
+        return jsonify({
+            'success':True,
+            'status_code': 200,
+            'drinks': newDrink.long()
+        }), 200
+    except:
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -101,33 +108,36 @@ def create_drink(jwt):
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def update_drink(jwt, id):
-    drink = Drink.query.get_or_404(id)
-    updatedDrink = request.get_json()
-    title = updatedDrink.get('title', None)
-    recipe = updatedDrink.get('recipe', None)
+    try:
+        drink = Drink.query.get_or_404(id)
+        updatedDrink = request.get_json()
+        title = updatedDrink.get('title', None)
+        recipe = updatedDrink.get('recipe', None)
 
-    if title != None and recipe != None:
-        drink.title = title
-        drink.recipe = recipe
-        drink.update()
-    elif title != None:
-        drink.title = title
-        drink.update()
-    elif recipe != None:
-        drink.recipe = recipe
-        drink.update()
-    else:
+        if title != None and recipe != None:
+            drink.title = title
+            drink.recipe = json.dumps(recipe)
+            drink.update()
+        elif title != None:
+            drink.title = title
+            drink.update()
+        elif recipe != None:
+            drink.recipe = recipe
+            drink.update()
+        else:
+            return jsonify({
+                'success': True,
+                "status_code": 200,
+                'drinks' : None
+            })
+
         return jsonify({
-            'success': True,
+            'success' : True,
             "status_code": 200,
-            'drinks' : None
+            'drinks': drink.long()
         })
-
-    return jsonify({
-        'success' : True,
-        "status_code": 200,
-        'drinks': drink.long()
-    })
+    except:
+        abort(422)
 
 
 '''
@@ -200,6 +210,17 @@ def internal_server_error(error):
         'error': 500,
         'message': 'Internal Server Error'
     }), 500
+
+'''
+    Method not allowed
+'''
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+        'success': False,
+        'error': 405,
+        'message': 'Method not Allowed'
+    }), 405
 
 '''
 @TODO implement error handler for AuthError
