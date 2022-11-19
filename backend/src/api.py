@@ -21,13 +21,6 @@ CORS(app)
 #     db_drop_and_create_all()
 
 # ROUTES
-
-@app.route('/')
-def index():
-    return {
-        'name': 'Hi! I\'m a coffe shop applications.',
-        'age': '1'
-    }
 '''
 @TODO implement endpoint
     GET /drinks
