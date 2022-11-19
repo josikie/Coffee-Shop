@@ -35,7 +35,7 @@ def get_token_auth_header():
         raise AuthError('There is no authorization in headers', 401)
 
     header = request.headers.get('Authorization')
-    header_parts = header.split(' ')
+    header_parts = header.split()
 
     if len(header_parts) != 2:
         raise AuthError('header parts aren\'t equal to 2', 401)

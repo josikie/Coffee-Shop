@@ -51,7 +51,7 @@ def get_drinks():
 '''
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def get_drinks_detail():
+def get_drinks_detail(jwt):
     drinks = Drink.query.all()
 
     formatted_drinks = [drink.long() for drink in drinks]
@@ -73,22 +73,20 @@ def get_drinks_detail():
 '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def create_drink():
-    try:
-        body = request.get_json()
-        title = body.get('title')
-        recipe = body.get('recipe')
+def create_drink(jwt):
+    body = request.get_json()
+    title = body.get('title')
+    recipe = body.get('recipe')
 
-        newDrink = Drink(title=title, recipe=recipe)
-        newDrink.insert()
+    newDrink = Drink(title=title, recipe=recipe)
+    newDrink.insert()
 
-        return jsonify({
-            'success':True,
-            "status_code": 200,
-            'drinks': newDrink.long()
-        })
-    except:
-        abort(422)
+    return jsonify({
+        'success':True,
+        'status_code': 200,
+        'drinks': newDrink.long()
+    }), 200
+
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
@@ -101,8 +99,8 @@ def create_drink():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
-@requires_auth('patch:drinks/<int:id>')
-def update_drink(id):
+@requires_auth('patch:drinks')
+def update_drink(jwt, id):
     drink = Drink.query.get_or_404(id)
     updatedDrink = request.get_json()
     title = updatedDrink.get('title', None)
@@ -143,8 +141,8 @@ def update_drink(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth('delete:drinks/<int:id>')
-def delete_drink(id):
+@requires_auth('delete:drinks')
+def delete_drink(jwt, id):
     drink = Drink.query.get_or_404(id)
     drink.delete()
 

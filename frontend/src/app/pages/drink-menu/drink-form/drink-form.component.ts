@@ -29,6 +29,10 @@ export class DrinkFormComponent implements OnInit {
     }
   }
 
+  ionViewWillEnter() {
+   
+  }
+
   customTrackBy(index: number, obj: any): any {
     return index;
   }
