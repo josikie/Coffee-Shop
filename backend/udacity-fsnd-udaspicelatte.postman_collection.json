@@ -111,7 +111,7 @@
 							"\r",
 							"pm.test(\"Title is match with the response\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.drinks.title).to.eql(\"Water0\");\r",
+							"    pm.expect(jsonData.drinks[0].title).to.eql(\"Water0\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -173,7 +173,7 @@
 							"\r",
 							"pm.test(\"Your test name\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.delete).to.eql(4);\r",
+							"    pm.expect(jsonData.delete).to.eql(2);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -209,7 +209,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/drinks/4",
+					"raw": "http://localhost:5000/drinks/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -217,7 +217,7 @@
 					"port": "5000",
 					"path": [
 						"drinks",
-						"4"
+						"2"
 					]
 				}
 			},
@@ -235,7 +235,7 @@
 							"});\r",
 							"pm.test(\"The title response match\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.drinks.title).to.eql(\"Water33\");\r",
+							"    pm.expect(jsonData.drinks[0].title).to.eql(\"Water1\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -263,7 +263,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"title\":\"Water33\",\r\n    \"recipe\":[{\"name\": \"water\", \"color\": \"blue\", \"parts\": 1}]\r\n}",
+					"raw": "{\r\n    \"title\":\"Water1\",\r\n    \"recipe\":[{\"name\": \"water\", \"color\": \"blue\", \"parts\": 1}]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -271,7 +271,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/drinks/2",
+					"raw": "http://localhost:5000/drinks/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -279,7 +279,7 @@
 					"port": "5000",
 					"path": [
 						"drinks",
-						"2"
+						"1"
 					],
 					"query": [
 						{
@@ -466,7 +466,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"title\":\"Sweet Corn\",\r\n    \"recipe\":\"[{\\\"name\\\": \\\"water\\\", \\\"color\\\": \\\"blue\\\", \\\"parts\\\": 1}]\"\r\n}"
+					"raw": "{\r\n    \"title\":\"Water1\",\r\n    \"recipe\":\"[{\\\"name\\\": \\\"water\\\", \\\"color\\\": \\\"blue\\\", \\\"parts\\\": 1}]\"\r\n}"
 				},
 				"url": {
 					"raw": "http://localhost:5000/drinks",
