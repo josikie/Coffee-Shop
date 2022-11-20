@@ -2,6 +2,7 @@ env/
 .vscode/
 __pycache__/
 database_test.db
+.env
 
 # OS generated files #
 ######################
